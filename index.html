@@ -3,23 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎬 Editor de Roteiros - Estilo Celtx</title>
+    <title>🎬 Editor de Roteiros</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Courier New', monospace;
             background: #1a1a1a;
             color: #e0e0e0;
             padding: 20px;
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
         }
 
@@ -33,8 +33,8 @@
         }
 
         h1 {
-            font-size: 24px;
             color: #ffd700;
+            font-size: 24px;
         }
 
         .toolbar {
@@ -46,7 +46,6 @@
             background: #2a2a2a;
             border-radius: 8px;
             border: 1px solid #444;
-            align-items: center;
         }
 
         .toolbar button {
@@ -54,8 +53,9 @@
             border: 1px solid #555;
             border-radius: 4px;
             cursor: pointer;
+            font-family: 'Courier New', monospace;
             font-size: 13px;
-            font-weight: 500;
+            font-weight: bold;
             transition: all 0.2s;
             background: #333;
             color: #e0e0e0;
@@ -67,63 +67,22 @@
             color: #ffd700;
         }
 
-        .toolbar button.active {
-            background: #ffd700;
-            color: #1a1a1a;
-            border-color: #ffd700;
-        }
-
         .btn-cena { background: #1a3a5c; border-color: #2a5a8c; }
-        .btn-cena:hover { background: #2a5a8c; }
-
         .btn-personagem { background: #5c3a1a; border-color: #8c5a2a; }
-        .btn-personagem:hover { background: #8c5a2a; }
-
         .btn-dialogo { background: #1a5c3a; border-color: #2a8c5a; }
-        .btn-dialogo:hover { background: #2a8c5a; }
-
         .btn-acao { background: #3a3a5c; border-color: #5a5a8c; }
-        .btn-acao:hover { background: #5a5a8c; }
-
         .btn-transicao { background: #5c1a3a; border-color: #8c2a5a; }
-        .btn-transicao:hover { background: #8c2a5a; }
-
-        .btn-parentese { background: #3a5c1a; border-color: #5a8c2a; }
-        .btn-parentese:hover { background: #5a8c2a; }
-
-        .btn-salvar { background: #2d5a27; border-color: #4a8c3f; }
-        .btn-salvar:hover { background: #3a7a33; }
-
         .btn-pdf { background: #5a2d27; border-color: #8c4a3f; }
-        .btn-pdf:hover { background: #7a3a33; }
-
-        .toolbar input[type="text"] {
-            background: #0d0d0d;
-            color: #e0e0e0;
-            border: 1px solid #333;
-            padding: 6px 12px;
-            border-radius: 4px;
-            font-family: 'Segoe UI', sans-serif;
-            flex: 1;
-            min-width: 120px;
-        }
-
-        .toolbar .separator {
-            width: 1px;
-            height: 30px;
-            background: #444;
-            margin: 0 5px;
-        }
 
         .editor-area {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 20px;
-            height: calc(100vh - 300px);
-            min-height: 500px;
+            height: calc(100vh - 280px);
+            min-height: 400px;
         }
 
-        @media (max-width: 900px) {
+        @media (max-width: 800px) {
             .editor-area {
                 grid-template-columns: 1fr;
                 height: auto;
@@ -134,7 +93,7 @@
         }
 
         .editor-panel {
-            background: #1a1a1a;
+            background: #0d0d0d;
             border: 1px solid #333;
             border-radius: 8px;
             overflow: hidden;
@@ -150,7 +109,6 @@
             color: #888;
             display: flex;
             justify-content: space-between;
-            align-items: center;
         }
 
         #editor {
@@ -195,7 +153,7 @@
         }
 
         /* ESTILOS DO ROTEIRO */
-        #preview .scene {
+        .scene {
             text-transform: uppercase;
             font-weight: bold;
             margin: 20px 0 12px 0;
@@ -203,14 +161,14 @@
             font-size: 13px;
         }
 
-        #preview .action {
+        .action {
             margin: 6px 0 10px 0;
             text-align: left;
             font-size: 12.5px;
             line-height: 1.6;
         }
 
-        #preview .character {
+        .character {
             text-transform: uppercase;
             font-weight: bold;
             text-align: center;
@@ -218,7 +176,7 @@
             font-size: 13px;
         }
 
-        #preview .dialogue {
+        .dialogue {
             margin: 0 auto 8px auto;
             padding-left: 30%;
             max-width: 70%;
@@ -227,7 +185,7 @@
             line-height: 1.6;
         }
 
-        #preview .transition {
+        .transition {
             text-transform: uppercase;
             text-align: right;
             margin: 15px 0 10px 0;
@@ -235,7 +193,7 @@
             font-weight: bold;
         }
 
-        #preview .parenthetical {
+        .parenthetical {
             text-align: center;
             color: #666;
             font-style: italic;
@@ -243,7 +201,7 @@
             font-size: 12px;
         }
 
-        #preview .empty-line {
+        .empty-line {
             height: 12px;
         }
 
@@ -251,6 +209,7 @@
             padding: 10px 15px;
             border-radius: 6px;
             margin: 10px 0;
+            font-family: 'Courier New', monospace;
             font-size: 13px;
         }
 
@@ -315,39 +274,22 @@
             font-size: 11px;
         }
 
-        /* Sugestões de autocompletar */
-        .suggestions {
-            position: absolute;
-            background: #2a2a2a;
-            border: 1px solid #555;
-            border-radius: 4px;
-            max-height: 150px;
-            overflow-y: auto;
-            display: none;
-            z-index: 1000;
-            min-width: 200px;
-        }
-
-        .suggestions .suggestion-item {
-            padding: 8px 15px;
-            cursor: pointer;
-            color: #e0e0e0;
-            font-family: 'Courier New', monospace;
-            font-size: 13px;
-        }
-
-        .suggestions .suggestion-item:hover {
+        .file-item button:hover {
             background: #444;
-            color: #ffd700;
         }
 
-        .config-box {
-            background: #1a1a1a;
-            border: 1px solid #333;
-            border-radius: 8px;
+        .dica {
+            background: #1a1a2a;
+            border: 1px solid #2a2a4a;
+            border-radius: 6px;
             padding: 10px 15px;
-            margin: 5px 0;
-            display: none;
+            margin: 10px 0;
+            font-size: 12px;
+            color: #888;
+        }
+
+        .dica strong {
+            color: #ffd700;
         }
     </style>
 </head>
@@ -355,10 +297,15 @@
     <div class="container">
         <header>
             <h1>🎬 Editor de Roteiros</h1>
-            <span style="color: #666; font-size: 12px;">Estilo Celtx</span>
+            <span style="color: #666; font-size: 12px;">Clique nos botões para formatar</span>
         </header>
 
         <div class="status info" id="status">📁 Pronto para editar</div>
+
+        <div class="dica">
+            💡 <strong>Dica:</strong> Clique nos botões abaixo para inserir cada elemento. 
+            O personagem é salvo automaticamente para sugestão!
+        </div>
 
         <!-- TOOLBAR -->
         <div class="toolbar">
@@ -367,16 +314,8 @@
             <button class="btn-dialogo" onclick="inserirDialogo()">💬 Diálogo</button>
             <button class="btn-acao" onclick="inserirAcao()">📝 Ação</button>
             <button class="btn-transicao" onclick="inserirTransicao()">🔄 Transição</button>
-            <button class="btn-parentese" onclick="inserirParentese()">( ) Parentético</button>
-            
-            <span class="separator"></span>
-            
-            <button class="btn-salvar" onclick="baixar()">⬇️ Baixar</button>
             <button class="btn-pdf" onclick="exportarPDF()">📄 PDF</button>
-            
-            <span class="separator"></span>
-            
-            <input type="text" id="nomeArquivo" value="meu-roteiro.fountain" placeholder="nome-do-arquivo">
+            <button onclick="baixar()">⬇️ Baixar</button>
             <button onclick="limpar()" style="background:#5a2727;border-color:#8c3f3f;">🗑️ Novo</button>
         </div>
 
@@ -388,38 +327,40 @@
                     <span id="charCount">0 caracteres</span>
                 </div>
                 <textarea id="editor" spellcheck="true"></textarea>
-                <div class="suggestions" id="suggestions"></div>
             </div>
             <div class="preview-panel">
                 <div class="panel-header">
                     <span>🎬 Preview</span>
-                    <span>Visualização do Roteiro</span>
+                    <span>Visualização</span>
                 </div>
-                <div id="preview">👈 Escreva no editor ou use os botões</div>
+                <div id="preview">👈 Use os botões para criar seu roteiro</div>
             </div>
         </div>
 
         <!-- FILE LIST -->
         <div class="file-list">
             <h3>📁 Seus Roteiros</h3>
-            <div id="files">Use "Baixar" para salvar seu roteiro</div>
+            <div id="files">Use "Baixar" para salvar seu roteiro como arquivo de texto</div>
         </div>
     </div>
 
     <script>
         // ============================================================
-        // BANCO DE PERSONAGENS (autocompletar)
+        // BANCO DE PERSONAGENS
         // ============================================================
         let personagens = [];
 
         // ============================================================
-        // FUNÇÕES DE INSERÇÃO
+        // ELEMENTOS
         // ============================================================
         const editor = document.getElementById('editor');
         const preview = document.getElementById('preview');
         const statusDiv = document.getElementById('status');
         const charCount = document.getElementById('charCount');
 
+        // ============================================================
+        // FUNÇÕES DE INSERÇÃO
+        // ============================================================
         function getCursorPosition() {
             return editor.selectionStart;
         }
@@ -441,7 +382,7 @@
         }
 
         function inserirCena() {
-            const texto = prompt('📍 Digite o cabeçalho da cena:', 'INT. LOCAL - DIA');
+            const texto = prompt('📍 Cabeçalho da cena (ex: INT. DELEGACIA - DIA):', '');
             if (texto) {
                 inserirTexto(texto.toUpperCase() + '\n');
                 setStatus('🎬 Cena inserida!', 'success');
@@ -452,18 +393,17 @@
             const nome = prompt('👤 Nome do personagem:', '');
             if (nome) {
                 const nomeUpper = nome.toUpperCase().trim();
-                // Adiciona ao banco de personagens se não existir
                 if (!personagens.includes(nomeUpper)) {
                     personagens.push(nomeUpper);
                     personagens.sort();
                 }
                 inserirTexto(nomeUpper + '\n');
-                setStatus(`👤 Personagem "${nomeUpper}" inserido!`, 'success');
+                setStatus(`👤 "${nomeUpper}" inserido!`, 'success');
             }
         }
 
         function inserirDialogo() {
-            const texto = prompt('💬 Digite a fala do personagem:', '');
+            const texto = prompt('💬 Fala do personagem:', '');
             if (texto) {
                 inserirTexto(texto + '\n');
                 setStatus('💬 Diálogo inserido!', 'success');
@@ -471,7 +411,7 @@
         }
 
         function inserirAcao() {
-            const texto = prompt('📝 Digite a ação/descrição:', '');
+            const texto = prompt('📝 Descrição da ação:', '');
             if (texto) {
                 inserirTexto(texto + '\n');
                 setStatus('📝 Ação inserida!', 'success');
@@ -479,87 +419,18 @@
         }
 
         function inserirTransicao() {
-            const texto = prompt('🔄 Digite a transição:', 'TRANSIGÃO');
+            const texto = prompt('🔄 Transição (ex: TRANSIGÃO):', 'TRANSIGÃO');
             if (texto) {
                 inserirTexto(texto.toUpperCase() + '\n');
                 setStatus('🔄 Transição inserida!', 'success');
             }
         }
 
-        function inserirParentese() {
-            const texto = prompt('( ) Digite o parentético:', '(para Sônia)');
-            if (texto) {
-                const parentese = texto.startsWith('(') ? texto : '(' + texto + ')';
-                inserirTexto(parentese + '\n');
-                setStatus('( ) Parentético inserido!', 'success');
-            }
-        }
-
         // ============================================================
-        // AUTOCOMPLETAR DE PERSONAGENS
-        // ============================================================
-        editor.addEventListener('input', function(e) {
-            const text = this.value;
-            const pos = this.selectionStart;
-            const before = text.substring(0, pos);
-            const lines = before.split('\n');
-            const currentLine = lines[lines.length - 1];
-            
-            // Verifica se está digitando no início da linha (personagem)
-            const lineStart = before.lastIndexOf('\n') + 1;
-            const isNewLine = before.length === lineStart || before.endsWith('\n');
-            
-            if (isNewLine && currentLine.length > 0) {
-                const sugestoes = personagens.filter(p => 
-                    p.startsWith(currentLine.toUpperCase())
-                );
-                
-                const suggestionsDiv = document.getElementById('suggestions');
-                if (sugestoes.length > 0) {
-                    suggestionsDiv.style.display = 'block';
-                    suggestionsDiv.innerHTML = sugestoes.map(s => 
-                        `<div class="suggestion-item" onclick="completarSugestao('${s}')">${s}</div>`
-                    ).join('');
-                    
-                    // Posiciona abaixo do cursor
-                    const rect = editor.getBoundingClientRect();
-                    suggestionsDiv.style.left = rect.left + 'px';
-                    suggestionsDiv.style.top = (rect.top + 30) + 'px';
-                } else {
-                    suggestionsDiv.style.display = 'none';
-                }
-            } else {
-                document.getElementById('suggestions').style.display = 'none';
-            }
-            
-            atualizarPreview();
-        });
-
-        function completarSugestao(nome) {
-            const text = editor.value;
-            const pos = editor.selectionStart;
-            const before = text.substring(0, pos);
-            const after = text.substring(pos);
-            const lines = before.split('\n');
-            const lastLine = lines[lines.length - 1];
-            
-            // Substitui a linha atual pelo nome completo
-            const beforeLastLine = before.substring(0, before.length - lastLine.length);
-            editor.value = beforeLastLine + nome + after;
-            
-            const newPos = beforeLastLine.length + nome.length;
-            editor.setSelectionRange(newPos, newPos);
-            editor.focus();
-            
-            document.getElementById('suggestions').style.display = 'none';
-            atualizarPreview();
-        }
-
-        // ============================================================
-        // FORMATAÇÃO DO ROTEIRO
+        // FORMATAÇÃO
         // ============================================================
         function formatarRoteiro(texto) {
-            if (!texto || !texto.trim()) return '👈 Escreva no editor ou use os botões';
+            if (!texto || !texto.trim()) return '👈 Use os botões para criar seu roteiro';
 
             const linhas = texto.split('\n');
             let resultado = [];
@@ -576,23 +447,23 @@
                 }
 
                 // CENA
-                if (/^(CENA|INT\.|EXT\.|I\/E\.)/i.test(linhaTrim) || /-[ ]*(DIA|NOITE|MANHÃ|TARDE|AMANHECER|ENTARDECER|NOITE)/i.test(linhaTrim)) {
+                if (/^(CENA|INT\.|EXT\.)/i.test(linhaTrim) || /-[ ]*(DIA|NOITE|MANHÃ|TARDE)/i.test(linhaTrim)) {
                     resultado.push(`<div class="scene">${linhaTrim.toUpperCase()}</div>`);
                     emDialogo = false;
                     continue;
                 }
 
                 // TRANSIÇÃO
-                if (/^[A-Z][A-Z\s]+:$/.test(linhaTrim) || /^[A-Z][A-Z\s]+ TO:$/.test(linhaTrim) || /^TRANS/I.test(linhaTrim)) {
+                if (/^[A-Z][A-Z\s]+:$/.test(linhaTrim) || /^TRANS/I.test(linhaTrim)) {
                     resultado.push(`<div class="transition">${linhaTrim.toUpperCase()}</div>`);
                     emDialogo = false;
                     continue;
                 }
 
-                // PERSONAGEM (maiúsculo, não é cena/transição)
+                // PERSONAGEM
                 if (linhaTrim === linhaTrim.toUpperCase() && 
                     linhaTrim.length > 1 && 
-                    !/^(CENA|INT\.|EXT\.|I\/E\.)/i.test(linhaTrim) &&
+                    !/^(CENA|INT\.|EXT\.)/i.test(linhaTrim) &&
                     !/^[A-Z][A-Z\s]+:$/.test(linhaTrim) &&
                     !/^TRANS/I.test(linhaTrim) &&
                     !linhaTrim.includes('(')) {
@@ -634,7 +505,7 @@
                 const trimmed = line.trim();
                 if (trimmed === trimmed.toUpperCase() && 
                     trimmed.length > 1 && 
-                    !/^(CENA|INT\.|EXT\.|I\/E\.)/i.test(trimmed) &&
+                    !/^(CENA|INT\.|EXT\.)/i.test(trimmed) &&
                     !/^[A-Z][A-Z\s]+:$/.test(trimmed) &&
                     !/^TRANS/I.test(trimmed) &&
                     !trimmed.includes('(') &&
@@ -666,25 +537,28 @@
             const blob = new Blob([conteudo], {type: 'text/plain;charset=utf-8'});
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = document.getElementById('nomeArquivo').value || 'meu-roteiro.fountain';
+            link.download = 'meu-roteiro.fountain';
             link.click();
             setStatus('⬇️ Arquivo baixado!', 'success');
         }
 
         function exportarPDF() {
-            setStatus('📄 Abrindo PDF...', 'info');
-            
             const conteudoHTML = preview.innerHTML;
-            const titulo = document.getElementById('nomeArquivo').value || 'Roteiro';
+            if (!conteudoHTML || conteudoHTML.includes('Use os botões')) {
+                setStatus('⚠️ Escreva algo no roteiro primeiro!', 'error');
+                return;
+            }
+
+            setStatus('📄 Abrindo PDF...', 'info');
             
             const win = window.open('', '_blank');
             win.document.write(`
                 <html>
                 <head>
-                    <title>${titulo}</title>
+                    <title>Meu Roteiro</title>
                     <style>
                         body { 
-                            font-family: 'Courier New', Courier, monospace; 
+                            font-family: 'Courier New', monospace; 
                             padding: 40px 50px; 
                             max-width: 800px; 
                             margin: 0 auto; 
@@ -745,28 +619,10 @@ DELEGADO BRANDÃO
 
 TRANSIGÃO`;
 
-        // Inicializa lista de personagens
-        const lines = editor.value.split('\n');
-        for (let line of lines) {
-            const trimmed = line.trim();
-            if (trimmed === trimmed.toUpperCase() && 
-                trimmed.length > 1 && 
-                !/^(CENA|INT\.|EXT\.|I\/E\.)/i.test(trimmed) &&
-                !/^[A-Z][A-Z\s]+:$/.test(trimmed) &&
-                !/^TRANS/I.test(trimmed) &&
-                !trimmed.includes('(') &&
-                !trimmed.includes(')')) {
-                if (!personagens.includes(trimmed)) {
-                    personagens.push(trimmed);
-                }
-            }
-        }
-        personagens.sort();
-
         atualizarPreview();
-        setStatus('🎬 Editor estilo Celtx carregado! Use os botões para criar seu roteiro.', 'success');
+        setStatus('🎬 Editor carregado! Use os botões para criar seu roteiro.', 'success');
 
-        console.log('🎬 Editor estilo Celtx carregado!');
+        console.log('🎬 Editor de Roteiros carregado!');
         console.log('👤 Personagens:', personagens);
     </script>
 </body>
