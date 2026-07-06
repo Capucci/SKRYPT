@@ -3,19 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>✍️ Editor de Roteiros</title>
+    <title>✍️ Editor de Roteiros - Debug</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             max-width: 800px;
-            margin: 50px auto;
+            margin: 30px auto;
             padding: 20px;
             background: #0d1117;
             color: #c9d1d9;
         }
         textarea {
             width: 100%;
-            height: 400px;
+            height: 300px;
             background: #161b22;
             color: #c9d1d9;
             border: 1px solid #30363d;
@@ -24,12 +24,7 @@
             font-size: 14px;
             border-radius: 6px;
         }
-        .toolbar {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin: 10px 0;
-        }
+        .toolbar { display: flex; gap: 10px; flex-wrap: wrap; margin: 10px 0; }
         button {
             background: #238636;
             color: white;
@@ -39,15 +34,9 @@
             cursor: pointer;
             font-weight: 500;
         }
-        button:hover {
-            background: #2ea043;
-        }
-        button.danger {
-            background: #da3633;
-        }
-        button.danger:hover {
-            background: #f85149;
-        }
+        button:hover { background: #2ea043; }
+        button.danger { background: #da3633; }
+        button.danger:hover { background: #f85149; }
         input {
             background: #161b22;
             color: #c9d1d9;
@@ -63,17 +52,13 @@
             border-radius: 6px;
             background: #0d1f2d;
             border: 1px solid #1f6feb;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 13px;
         }
-        .status.success {
-            border-color: #238636;
-            background: #0d2818;
-            color: #3fb950;
-        }
-        .status.error {
-            border-color: #da3633;
-            background: #2d0f0f;
-            color: #f85149;
-        }
+        .status.success { border-color: #238636; background: #0d2818; color: #3fb950; }
+        .status.error { border-color: #da3633; background: #2d0f0f; color: #f85149; }
+        .status.warning { border-color: #d29922; background: #1e1a0d; color: #e3b341; }
         .file-list {
             margin-top: 15px;
             background: #161b22;
@@ -90,65 +75,183 @@
             justify-content: space-between;
             align-items: center;
         }
-        .file-item button {
-            padding: 4px 12px;
-            font-size: 12px;
+        .config-box {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 10px 0;
         }
+        .config-box label {
+            display: block;
+            margin: 5px 0;
+        }
+        .config-box input[type="text"] {
+            width: 100%;
+            margin: 5px 0 10px 0;
+        }
+        .debug-log {
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+        .debug-log .log-entry {
+            padding: 2px 0;
+            border-bottom: 1px solid #1c2333;
+        }
+        .debug-log .log-error { color: #f85149; }
+        .debug-log .log-success { color: #3fb950; }
+        .debug-log .log-info { color: #58a6ff; }
     </style>
 </head>
 <body>
-    <h1>✍️ Editor de Roteiros</h1>
+    <h1>🐛 Editor de Roteiros - Modo Debug</h1>
     
     <div class="status" id="status">📁 Pronto para editar</div>
     
+    <!-- Configuração -->
+    <div class="config-box">
+        <h3>⚙️ Configuração do Repositório</h3>
+        <label>👤 Username (REPO_OWNER):</label>
+        <input type="text" id="configOwner" placeholder="Seu username do GitHub">
+        <label>📁 Repositório (REPO_NAME):</label>
+        <input type="text" id="configRepo" placeholder="Nome do repositório">
+        <label>📂 Pasta (PASTA):</label>
+        <input type="text" id="configPasta" value="roteiros/">
+        <button onclick="atualizarConfig()">✅ Atualizar Configuração</button>
+        <button onclick="testarConexao()">🔗 Testar Conexão</button>
+    </div>
+    
     <div class="toolbar">
-        <input type="text" id="nomeArquivo" value="meu-roteiro.txt" placeholder="nome-do-arquivo.txt">
+        <input type="text" id="nomeArquivo" value="teste.txt" placeholder="nome-do-arquivo.txt">
         <button onclick="salvar()">💾 Salvar</button>
         <button onclick="carregar()">📂 Carregar</button>
+        <button onclick="listarArquivos()">📋 Listar</button>
         <button onclick="baixar()">⬇️ Baixar</button>
         <button class="danger" onclick="limpar()">🗑️ Novo</button>
     </div>
     
-    <textarea id="editor" placeholder="Escreva seu roteiro aqui..."></textarea>
+    <textarea id="editor" placeholder="Escreva seu roteiro aqui...">Teste do editor - " + new Date().toLocaleString()</textarea>
     
     <div class="file-list">
         <h3>📁 Seus Roteiros</h3>
-        <div id="fileList">
-            <button onclick="listarArquivos()" style="margin: 5px 0;">🔄 Atualizar lista</button>
-            <div id="files"></div>
-        </div>
+        <div id="files">Clique em "Listar" para ver os arquivos</div>
+    </div>
+    
+    <div class="debug-log" id="debugLog">
+        <div class="log-entry log-info">📋 Log de diagnóstico iniciado...</div>
     </div>
 
     <script>
-        // 🔧 CONFIGURE AQUI COM SEUS DADOS
-        const REPO_OWNER = 'Capucci';      // ← SEU USERNAME
-        const REPO_NAME = 'SKRYPT';        // ← NOME DO REPOSITÓRIO
-        const PASTA = 'roteiros/';         // ← NOME DA PASTA
-        
         // Variáveis
         let token = '';
+        let REPO_OWNER = '';
+        let REPO_NAME = '';
+        let PASTA = 'roteiros/';
+        
         const editor = document.getElementById('editor');
         const statusDiv = document.getElementById('status');
         const nomeArquivo = document.getElementById('nomeArquivo');
         const filesDiv = document.getElementById('files');
+        const debugLog = document.getElementById('debugLog');
+
+        function addLog(mensagem, tipo = 'info') {
+            const entry = document.createElement('div');
+            entry.className = `log-entry log-${tipo}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${mensagem}`;
+            debugLog.appendChild(entry);
+            debugLog.scrollTop = debugLog.scrollHeight;
+        }
 
         function setStatus(msg, tipo = '') {
             statusDiv.textContent = msg;
             statusDiv.className = 'status ' + tipo;
+            addLog(msg, tipo || 'info');
         }
 
         function getToken() {
             if (token) return token;
             token = prompt('🔑 Digite seu GitHub Personal Access Token:');
             if (!token) {
-                setStatus('❌ Token necessário para salvar', 'error');
+                setStatus('❌ Token necessário!', 'error');
                 throw new Error('Token não fornecido');
             }
+            addLog('🔑 Token obtido (primeiros 4 caracteres: ' + token.substring(0, 4) + '...)', 'info');
             return token;
         }
 
+        function atualizarConfig() {
+            REPO_OWNER = document.getElementById('configOwner').value.trim();
+            REPO_NAME = document.getElementById('configRepo').value.trim();
+            PASTA = document.getElementById('configPasta').value.trim() || 'roteiros/';
+            
+            if (!PASTA.endsWith('/')) PASTA += '/';
+            
+            setStatus(`✅ Config atualizada: ${REPO_OWNER}/${REPO_NAME}/${PASTA}`, 'success');
+            addLog(`📁 Config: ${REPO_OWNER}/${REPO_NAME}/${PASTA}`, 'info');
+        }
+
+        async function testarConexao() {
+            if (!REPO_OWNER || !REPO_NAME) {
+                setStatus('⚠️ Configure o repositório primeiro!', 'warning');
+                return;
+            }
+
+            const tokenAtual = getToken();
+            setStatus('⏳ Testando conexão...', 'info');
+            addLog('🔗 Testando conexão com GitHub...', 'info');
+
+            try {
+                // Testa se o repositório existe
+                const response = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}`, {
+                    headers: { 'Authorization': `token ${tokenAtual}` }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    setStatus(`✅ Conexão OK! Repositório: ${data.full_name}`, 'success');
+                    addLog(`✅ Repositório encontrado: ${data.full_name}`, 'success');
+                    
+                    // Testa se a pasta existe
+                    const pastaResponse = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${PASTA}`, {
+                        headers: { 'Authorization': `token ${tokenAtual}` }
+                    });
+                    
+                    if (pastaResponse.ok) {
+                        setStatus(`✅ Pasta "${PASTA}" encontrada!`, 'success');
+                        addLog(`✅ Pasta "${PASTA}" existe`, 'success');
+                        listarArquivos();
+                    } else if (pastaResponse.status === 404) {
+                        setStatus(`⚠️ Pasta "${PASTA}" não encontrada. Vamos criar?`, 'warning');
+                        addLog(`⚠️ Pasta "${PASTA}" não encontrada`, 'warning');
+                    } else {
+                        setStatus(`❌ Erro ao verificar pasta: ${pastaResponse.status}`, 'error');
+                        addLog(`❌ Erro na pasta: ${pastaResponse.status}`, 'error');
+                    }
+                } else {
+                    const error = await response.json();
+                    setStatus(`❌ Erro: ${error.message || 'Repositório não encontrado'}`, 'error');
+                    addLog(`❌ Erro: ${error.message || 'Repositório não encontrado'}`, 'error');
+                }
+            } catch (error) {
+                setStatus(`❌ Erro: ${error.message}`, 'error');
+                addLog(`❌ Erro: ${error.message}`, 'error');
+            }
+        }
+
         async function salvar() {
-            const nome = nomeArquivo.value.trim() || 'meu-roteiro.txt';
+            if (!REPO_OWNER || !REPO_NAME) {
+                setStatus('⚠️ Configure o repositório primeiro!', 'warning');
+                return;
+            }
+
+            const nome = nomeArquivo.value.trim() || 'teste.txt';
             const conteudo = editor.value;
             
             if (!conteudo) {
@@ -157,7 +260,8 @@
             }
 
             const tokenAtual = getToken();
-            setStatus('⏳ Salvando...');
+            setStatus('⏳ Salvando...', 'info');
+            addLog(`💾 Tentando salvar: ${nome}`);
 
             try {
                 // Verifica se o arquivo já existe
@@ -169,8 +273,11 @@
                     if (check.ok) {
                         const data = await check.json();
                         sha = data.sha;
+                        addLog(`📄 Arquivo existe, SHA: ${sha.substring(0, 8)}...`, 'info');
                     }
-                } catch (e) {}
+                } catch (e) {
+                    addLog('📄 Arquivo novo (não existe ainda)', 'info');
+                }
 
                 // Prepara o conteúdo
                 const contentBase64 = btoa(unescape(encodeURIComponent(conteudo)));
@@ -189,30 +296,47 @@
                 });
 
                 if (response.ok) {
+                    const data = await response.json();
                     setStatus(`✅ "${nome}" salvo com sucesso!`, 'success');
+                    addLog(`✅ Salvo! Commit: ${data.commit.sha.substring(0, 8)}`, 'success');
                     listarArquivos();
                 } else {
                     const error = await response.json();
                     setStatus(`❌ Erro: ${error.message || 'Falha ao salvar'}`, 'error');
+                    addLog(`❌ Erro ao salvar: ${error.message || 'Falha ao salvar'}`, 'error');
+                    addLog(`📊 Status: ${response.status}`, 'error');
+                    addLog(`📊 URL: ${response.url}`, 'error');
                 }
             } catch (error) {
                 setStatus(`❌ Erro: ${error.message}`, 'error');
+                addLog(`❌ Exceção: ${error.message}`, 'error');
             }
         }
 
         async function carregar() {
-            const nome = prompt('📂 Qual arquivo carregar?', 'meu-roteiro.txt');
+            if (!REPO_OWNER || !REPO_NAME) {
+                setStatus('⚠️ Configure o repositório primeiro!', 'warning');
+                return;
+            }
+
+            const nome = prompt('📂 Qual arquivo carregar?', 'teste.txt');
             if (!nome) return;
 
             const tokenAtual = getToken();
-            setStatus(`⏳ Carregando "${nome}"...`);
+            setStatus(`⏳ Carregando "${nome}"...`, 'info');
+            addLog(`📂 Carregando: ${nome}`);
 
             try {
                 const response = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${PASTA}${nome}`, {
                     headers: { 'Authorization': `token ${tokenAtual}` }
                 });
 
-                if (!response.ok) throw new Error('Arquivo não encontrado');
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        throw new Error('Arquivo não encontrado');
+                    }
+                    throw new Error(`Erro ${response.status}`);
+                }
 
                 const data = await response.json();
                 const conteudo = decodeURIComponent(escape(atob(data.content)));
@@ -220,13 +344,21 @@
                 editor.value = conteudo;
                 nomeArquivo.value = nome;
                 setStatus(`✅ "${nome}" carregado!`, 'success');
+                addLog(`✅ Carregado: ${nome} (${conteudo.length} caracteres)`, 'success');
             } catch (error) {
                 setStatus(`❌ Erro: ${error.message}`, 'error');
+                addLog(`❌ Erro ao carregar: ${error.message}`, 'error');
             }
         }
 
         async function listarArquivos() {
-            setStatus('⏳ Listando arquivos...');
+            if (!REPO_OWNER || !REPO_NAME) {
+                setStatus('⚠️ Configure o repositório primeiro!', 'warning');
+                return;
+            }
+
+            setStatus('⏳ Listando arquivos...', 'info');
+            addLog('📋 Listando arquivos...', 'info');
 
             try {
                 const tokenAtual = getToken();
@@ -237,13 +369,15 @@
                 if (!response.ok) {
                     if (response.status === 404) {
                         filesDiv.innerHTML = `<p style="color: #8b949e;">📁 Ainda não há roteiros. Crie o primeiro!</p>`;
-                        setStatus('📁 Nenhum roteiro encontrado', '');
+                        setStatus('📁 Nenhum roteiro encontrado', 'warning');
+                        addLog('📁 Pasta vazia ou não existe', 'warning');
                         return;
                     }
-                    throw new Error('Erro ao listar');
+                    throw new Error(`Erro ${response.status}`);
                 }
 
                 const files = await response.json();
+                addLog(`📁 ${files.length} arquivos encontrados`, 'success');
                 
                 if (files.length === 0) {
                     filesDiv.innerHTML = `<p style="color: #8b949e;">📁 Nenhum roteiro encontrado</p>`;
@@ -264,6 +398,7 @@
             } catch (error) {
                 filesDiv.innerHTML = `<p style="color: #8b949e;">❌ Erro ao listar arquivos</p>`;
                 setStatus(`❌ ${error.message}`, 'error');
+                addLog(`❌ Erro ao listar: ${error.message}`, 'error');
             }
         }
 
@@ -323,9 +458,10 @@
             const blob = new Blob([conteudo], {type: 'text/plain'});
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = nomeArquivo.value || 'meu-roteiro.txt';
+            link.download = nomeArquivo.value || 'roteiro.txt';
             link.click();
             setStatus('⬇️ Arquivo baixado', 'success');
+            addLog('⬇️ Download local', 'info');
         }
 
         function limpar() {
@@ -334,9 +470,27 @@
             setStatus('📝 Novo roteiro criado', '');
         }
 
-        // Inicialização
-        console.log(`📁 Repositório: ${REPO_OWNER}/${REPO_NAME}`);
-        console.log(`📁 Pasta: ${PASTA}`);
+        // Inicialização com autodetecção
+        addLog('🚀 Editor iniciado', 'info');
+        
+        // Tenta detectar automaticamente o username da URL
+        const urlParts = window.location.href.split('/');
+        const detectedOwner = urlParts[2]?.split('.')[0]; // capucci.github.io
+        const detectedRepo = urlParts[3] || 'SKRYPT';
+        
+        if (detectedOwner && detectedOwner !== 'github.io') {
+            document.getElementById('configOwner').value = detectedOwner;
+            document.getElementById('configRepo').value = detectedRepo;
+            addLog(`🔍 Detectado: ${detectedOwner}/${detectedRepo}`, 'info');
+            
+            // Atualiza configuração automaticamente
+            REPO_OWNER = detectedOwner;
+            REPO_NAME = detectedRepo;
+            setStatus(`📁 Configuração detectada: ${REPO_OWNER}/${REPO_NAME}`, 'success');
+            addLog(`📁 Config: ${REPO_OWNER}/${REPO_NAME}/${PASTA}`, 'info');
+        } else {
+            addLog('⚠️ Não foi possível detectar automaticamente. Configure manualmente.', 'warning');
+        }
     </script>
 </body>
 </html>
