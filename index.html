@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎬 Editor de Roteiros Profissional</title>
+    <title>🎬 Editor de Roteiros</title>
     <style>
         * {
             margin: 0;
@@ -12,7 +12,7 @@
         }
         
         body {
-            font-family: 'Courier New', monospace;
+            font-family: 'Courier New', Courier, monospace;
             background: #1a1a1a;
             color: #e0e0e0;
             padding: 20px;
@@ -85,11 +85,22 @@
             background: #7a3333;
         }
 
+        .toolbar input {
+            background: #0d0d0d;
+            color: #e0e0e0;
+            border: 1px solid #333;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            flex: 1;
+            min-width: 150px;
+        }
+
         .editor-area {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 20px;
-            height: calc(100vh - 250px);
+            height: calc(100vh - 280px);
             min-height: 500px;
         }
 
@@ -162,57 +173,74 @@
 
         #preview {
             flex: 1;
-            padding: 20px;
-            background: #f5f0e8;
+            padding: 30px 40px;
+            background: #ffffff;
             color: #1a1a1a;
             font-family: 'Courier New', monospace;
-            font-size: 13px;
-            line-height: 1.8;
+            font-size: 12.5px;
+            line-height: 1.6;
             overflow-y: auto;
             min-height: 400px;
             white-space: pre-wrap;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.05);
         }
 
-        /* Estilos para o preview do roteiro */
-        .scene-header {
+        /* ============================================================
+           ESTILOS EXATOS DO ROTEIRO - IGUAL PRINT 02
+           ============================================================ */
+        #preview .scene {
             text-transform: uppercase;
             font-weight: bold;
-            margin: 15px 0 10px 0;
-            color: #1a1a1a;
+            margin: 20px 0 12px 0;
+            text-align: left;
+            font-size: 13px;
+            letter-spacing: 0.5px;
         }
 
-        .action {
-            margin: 8px 0;
-            color: #1a1a1a;
+        #preview .action {
+            margin: 6px 0 10px 0;
+            text-align: left;
+            font-size: 12.5px;
+            line-height: 1.6;
         }
 
-        .character {
+        #preview .character {
             text-transform: uppercase;
             font-weight: bold;
             text-align: center;
-            margin: 15px 0 5px 0;
-            color: #1a1a1a;
+            margin: 18px 0 4px 0;
+            font-size: 13px;
+            letter-spacing: 0.5px;
         }
 
-        .dialogue {
-            margin: 0 auto 10px auto;
+        #preview .dialogue {
+            margin: 0 auto 8px auto;
             padding-left: 30%;
             max-width: 70%;
-            color: #1a1a1a;
+            text-align: left;
+            font-size: 12.5px;
+            line-height: 1.6;
         }
 
-        .transition {
+        #preview .transition {
             text-transform: uppercase;
             text-align: right;
             margin: 15px 0 10px 0;
-            color: #1a1a1a;
+            font-size: 12.5px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
         }
 
-        .parenthetical {
+        #preview .parenthetical {
             text-align: center;
             color: #666;
             font-style: italic;
             margin: 2px 0 2px 30%;
+            font-size: 12px;
+        }
+
+        #preview .empty-line {
+            height: 12px;
         }
 
         .status {
@@ -253,7 +281,7 @@
             border-radius: 8px;
             padding: 15px;
             margin-top: 15px;
-            max-height: 200px;
+            max-height: 150px;
             overflow-y: auto;
         }
 
@@ -265,8 +293,8 @@
         }
 
         .file-item {
-            padding: 6px 12px;
-            margin: 4px 0;
+            padding: 4px 10px;
+            margin: 3px 0;
             background: #252525;
             border-radius: 4px;
             display: flex;
@@ -275,20 +303,16 @@
             border: 1px solid #333;
         }
 
-        .file-item:hover {
-            border-color: #555;
-        }
-
         .file-item .name {
             color: #e0e0e0;
-            font-size: 13px;
+            font-size: 12px;
         }
 
         .file-item button {
             background: #333;
             color: #e0e0e0;
             border: 1px solid #555;
-            padding: 2px 12px;
+            padding: 2px 10px;
             border-radius: 3px;
             cursor: pointer;
             font-size: 11px;
@@ -298,15 +322,6 @@
         .file-item button:hover {
             background: #444;
             border-color: #ffd700;
-        }
-
-        .file-item button.danger {
-            background: #5a2727;
-            border-color: #8c3f3f;
-        }
-
-        .file-item button.danger:hover {
-            background: #7a3333;
         }
 
         .config-box {
@@ -357,23 +372,22 @@
 <body>
     <div class="container">
         <header>
-            <h1>🎬 SKRYPT - Editor de Roteiros</h1>
-            <span style="color: #666; font-size: 12px;">Formatação Fountain</span>
+            <h1>🎬 Editor de Roteiros</h1>
+            <span style="color: #666; font-size: 12px;">Formato Profissional</span>
         </header>
 
-        <!-- Status -->
         <div class="status info" id="status">📁 Pronto para editar</div>
 
-        <!-- Configuração -->
+        <!-- CONFIGURAÇÃO -->
         <div class="config-box">
             <div class="config-row">
                 <div>
                     <label>👤 Username (REPO_OWNER)</label>
-                    <input type="text" id="configOwner" placeholder="Seu username do GitHub">
+                    <input type="text" id="configOwner" placeholder="capucci" value="capucci">
                 </div>
                 <div>
                     <label>📁 Repositório (REPO_NAME)</label>
-                    <input type="text" id="configRepo" placeholder="Nome do repositório">
+                    <input type="text" id="configRepo" placeholder="SKRYPT" value="SKRYPT">
                 </div>
             </div>
             <div style="display: flex; gap: 10px; margin-top: 5px;">
@@ -382,9 +396,9 @@
             </div>
         </div>
 
-        <!-- Toolbar -->
+        <!-- TOOLBAR -->
         <div class="toolbar">
-            <input type="text" id="nomeArquivo" value="meu-roteiro.fountain" placeholder="nome-do-roteiro.fountain" style="background: #0d0d0d; color: #e0e0e0; border: 1px solid #333; padding: 6px 12px; border-radius: 4px; font-family: 'Courier New', monospace; flex: 1; min-width: 150px;">
+            <input type="text" id="nomeArquivo" value="BRANDAO.fountain" placeholder="nome-do-roteiro.fountain">
             <button class="primary" onclick="salvar()">💾 Salvar</button>
             <button onclick="carregar()">📂 Carregar</button>
             <button onclick="listarArquivos()">📋 Listar</button>
@@ -393,18 +407,16 @@
             <button class="danger" onclick="limpar()">🗑️ Novo</button>
         </div>
 
-        <!-- Editor Area -->
+        <!-- EDITOR + PREVIEW -->
         <div class="editor-area">
             <div class="editor-panel">
                 <div class="panel-header">
                     <span>✍️ Editor</span>
                     <span class="badge" id="charCount">0 caracteres</span>
                 </div>
-                <textarea id="editor" spellcheck="true" placeholder="Escreva seu roteiro no formato Fountain...
+                <textarea id="editor" spellcheck="true">CENA 01 DELEGACIA - INT - DIA
 
-INT. DELEGACIA - DIA
-
-Em uma comemoração na delegacia, o delegado parabeniza SÔNIA.
+Em uma comemoração na delegacia o delegado parabeniza SÔNIA:
 
 DELEGADO BRANDÃO
 Parabéns policial Sônia Falcão, você conseguiu em um mês o que vários de nossos policiais vem tentando há anos.
@@ -412,32 +424,22 @@ Parabéns policial Sônia Falcão, você conseguiu em um mês o que vários de n
 SÔNIA
 Delegado Brandão, só fiz o meu dever.
 
-POLICIAL TORRES fica observando com raiva e sai pra lá.
+POLICIAL TORRES fica observando com raiva e sai prá lá.
 
 DELEGADO BRANDÃO
-(para Sônia)
-Você é uma grande policial.
 
-TRANSIGÃO
-
-REGras de formatação:
-• CENAS: INT./EXT. + LOCAL + - + PERÍODO (tudo MAIÚSCULO)
-• AÇÃO: descrição normal
-• PERSONAGEM: MAIÚSCULO, alinhado ao centro
-• FALA: indentada à esquerda
-• PARENTÉTICO: (entre parênteses)
-• TRANSIÇÃO: MAIÚSCULO, alinhado à direita"></textarea>
+TRANSIGÃO</textarea>
             </div>
             <div class="preview-panel">
                 <div class="panel-header">
                     <span>🎬 Preview</span>
                     <span class="badge">Visualização do Roteiro</span>
                 </div>
-                <div id="preview">👈 Escreva no editor para ver a prévia formatada</div>
+                <div id="preview"></div>
             </div>
         </div>
 
-        <!-- File List -->
+        <!-- FILE LIST -->
         <div class="file-list">
             <h3>📁 Seus Roteiros</h3>
             <div id="files">Clique em "Listar" para ver seus arquivos</div>
@@ -446,69 +448,59 @@ REGras de formatação:
 
     <script>
         // ============================================================
-        // CONFIGURAÇÃO - MUDE AQUI SE NECESSÁRIO
+        // CONFIGURAÇÃO
         // ============================================================
-        let REPO_OWNER = '';
-        let REPO_NAME = '';
+        let REPO_OWNER = 'capucci';
+        let REPO_NAME = 'SKRYPT';
         const PASTA = 'roteiros/';
         let token = '';
 
         // ============================================================
-        // FORMATAÇÃO DE ROTEIRO (Fountain)
+        // FUNÇÃO DE FORMATAÇÃO EXATA - IGUAL PRINT 02
         // ============================================================
         function formatarRoteiro(texto) {
-            if (!texto.trim()) return '👈 Escreva no editor para ver a prévia formatada';
+            if (!texto || !texto.trim()) return '👈 Escreva no editor para ver a prévia formatada';
 
             const linhas = texto.split('\n');
             let resultado = [];
             let emDialogo = false;
-            let personagemAtual = '';
 
             for (let i = 0; i < linhas.length; i++) {
                 let linha = linhas[i];
                 let linhaTrim = linha.trim();
 
-                // Pula linhas vazias
+                // Linha vazia
                 if (!linhaTrim) {
-                    resultado.push('');
+                    resultado.push('<div class="empty-line"></div>');
                     emDialogo = false;
                     continue;
                 }
 
                 // ===== CENA =====
-                // Começa com INT./EXT. e termina com - DIA/NOITE
-                if (/^(INT\.|EXT\.|I\/E\.)/i.test(linhaTrim) && /-[ ]*(DIA|NOITE|MANHÃ|TARDE|AMANHECER|ENTARDECER|NOITE|DAY|NIGHT)/i.test(linhaTrim)) {
-                    resultado.push(`<div class="scene-header">${linhaTrim.toUpperCase()}</div>`);
+                // Começa com CENA, INT., EXT. ou termina com - DIA/NOITE
+                if (/^(CENA|INT\.|EXT\.|I\/E\.)/i.test(linhaTrim) || /-[ ]*(DIA|NOITE|MANHÃ|TARDE|AMANHECER|ENTARDECER|NOITE|DAY|NIGHT)/i.test(linhaTrim)) {
+                    resultado.push(`<div class="scene">${linhaTrim.toUpperCase()}</div>`);
                     emDialogo = false;
                     continue;
                 }
 
                 // ===== TRANSIÇÃO =====
-                // Termina com : ou TO: ou está em maiúsculas no final
-                if (/^[A-Z][A-Z\s]+:$/.test(linhaTrim) || /^[A-Z][A-Z\s]+ TO:$/.test(linhaTrim) || /^[A-Z][A-Z\s]+ TO [A-Z]/.test(linhaTrim)) {
-                    resultado.push(`<div class="transition">${linhaTrim}</div>`);
+                if (/^[A-Z][A-Z\s]+:$/.test(linhaTrim) || /^[A-Z][A-Z\s]+ TO:$/.test(linhaTrim) || /^[A-Z][A-Z\s]+ TO [A-Z]/.test(linhaTrim) || /^TRANS/I.test(linhaTrim)) {
+                    resultado.push(`<div class="transition">${linhaTrim.toUpperCase()}</div>`);
                     emDialogo = false;
                     continue;
                 }
 
                 // ===== PERSONAGEM =====
-                // Está em maiúsculas e NÃO é uma cena/transição
+                // Está em maiúsculas, NÃO é cena/transição, tem pelo menos 2 caracteres
                 if (linhaTrim === linhaTrim.toUpperCase() && 
                     linhaTrim.length > 1 && 
-                    !/^(INT\.|EXT\.|I\/E\.)/i.test(linhaTrim) &&
+                    !/^(CENA|INT\.|EXT\.|I\/E\.)/i.test(linhaTrim) &&
                     !/^[A-Z][A-Z\s]+:$/.test(linhaTrim) &&
-                    !/^[A-Z][A-Z\s]+ TO:$/.test(linhaTrim)) {
-                    
-                    // Verifica se é um parentético na mesma linha
-                    if (linhaTrim.includes('(') && linhaTrim.includes(')')) {
-                        // É um parentético, não é personagem
-                        resultado.push(`<div class="parenthetical">${linhaTrim}</div>`);
-                        emDialogo = false;
-                        continue;
-                    }
+                    !/^TRANS/I.test(linhaTrim) &&
+                    !linhaTrim.includes('(')) {
                     
                     resultado.push(`<div class="character">${linhaTrim}</div>`);
-                    personagemAtual = linhaTrim;
                     emDialogo = true;
                     continue;
                 }
@@ -520,13 +512,13 @@ REGras de formatação:
                     continue;
                 }
 
-                // ===== DIALOGO (FALA) =====
+                // ===== DIALOGO =====
                 if (emDialogo && !linhaTrim.startsWith('(')) {
                     resultado.push(`<div class="dialogue">${linhaTrim}</div>`);
                     continue;
                 }
 
-                // ===== AÇÃO (DESCRIÇÃO) =====
+                // ===== AÇÃO =====
                 resultado.push(`<div class="action">${linhaTrim}</div>`);
                 emDialogo = false;
             }
@@ -542,11 +534,13 @@ REGras de formatação:
         const statusDiv = document.getElementById('status');
         const charCount = document.getElementById('charCount');
 
-        editor.addEventListener('input', function() {
-            const texto = this.value;
+        function atualizarPreview() {
+            const texto = editor.value;
             charCount.textContent = texto.length + ' caracteres';
             preview.innerHTML = formatarRoteiro(texto);
-        });
+        }
+
+        editor.addEventListener('input', atualizarPreview);
 
         // ============================================================
         // FUNÇÕES GITHUB
@@ -567,22 +561,12 @@ REGras de formatação:
         }
 
         function atualizarConfig() {
-            REPO_OWNER = document.getElementById('configOwner').value.trim();
-            REPO_NAME = document.getElementById('configRepo').value.trim();
-            
-            if (REPO_OWNER && REPO_NAME) {
-                setStatus(`✅ Config: ${REPO_OWNER}/${REPO_NAME}`, 'success');
-            } else {
-                setStatus('⚠️ Preencha username e repositório', 'warning');
-            }
+            REPO_OWNER = document.getElementById('configOwner').value.trim() || 'capucci';
+            REPO_NAME = document.getElementById('configRepo').value.trim() || 'SKRYPT';
+            setStatus(`✅ Config: ${REPO_OWNER}/${REPO_NAME}`, 'success');
         }
 
         async function testarConexao() {
-            if (!REPO_OWNER || !REPO_NAME) {
-                setStatus('⚠️ Configure o repositório primeiro!', 'warning');
-                return;
-            }
-
             const tokenAtual = getToken();
             setStatus('⏳ Testando...', 'info');
 
@@ -592,7 +576,7 @@ REGras de formatação:
                 });
 
                 if (response.ok) {
-                    setStatus('✅ Conexão OK!', 'success');
+                    setStatus(`✅ Conexão OK! ${REPO_OWNER}/${REPO_NAME}`, 'success');
                 } else {
                     const error = await response.json();
                     setStatus(`❌ Erro: ${error.message}`, 'error');
@@ -603,11 +587,6 @@ REGras de formatação:
         }
 
         async function salvar() {
-            if (!REPO_OWNER || !REPO_NAME) {
-                setStatus('⚠️ Configure o repositório primeiro!', 'warning');
-                return;
-            }
-
             const nome = document.getElementById('nomeArquivo').value.trim() || 'meu-roteiro.fountain';
             const conteudo = editor.value;
             
@@ -659,12 +638,7 @@ REGras de formatação:
         }
 
         async function carregar() {
-            if (!REPO_OWNER || !REPO_NAME) {
-                setStatus('⚠️ Configure o repositório primeiro!', 'warning');
-                return;
-            }
-
-            const nome = prompt('📂 Qual arquivo carregar?', 'meu-roteiro.fountain');
+            const nome = prompt('📂 Qual arquivo carregar?', 'BRANDAO.fountain');
             if (!nome) return;
 
             const tokenAtual = getToken();
@@ -682,9 +656,7 @@ REGras de formatação:
                 
                 editor.value = conteudo;
                 document.getElementById('nomeArquivo').value = nome;
-                preview.innerHTML = formatarRoteiro(conteudo);
-                charCount.textContent = conteudo.length + ' caracteres';
-                
+                atualizarPreview();
                 setStatus(`✅ "${nome}" carregado!`, 'success');
             } catch (error) {
                 setStatus(`❌ Erro: ${error.message}`, 'error');
@@ -692,11 +664,6 @@ REGras de formatação:
         }
 
         async function listarArquivos() {
-            if (!REPO_OWNER || !REPO_NAME) {
-                setStatus('⚠️ Configure o repositório primeiro!', 'warning');
-                return;
-            }
-
             setStatus('⏳ Listando...', 'info');
 
             try {
@@ -712,23 +679,25 @@ REGras de formatação:
                 }
 
                 const files = await response.json();
+                const arquivos = files.filter(f => f.name !== '.gitkeep');
                 
-                if (files.length === 0) {
+                if (arquivos.length === 0) {
                     document.getElementById('files').innerHTML = `<p style="color: #888;">📁 Nenhum roteiro encontrado</p>`;
+                    setStatus('📁 Nenhum roteiro', 'warning');
                     return;
                 }
 
-                document.getElementById('files').innerHTML = files.map(file => `
+                document.getElementById('files').innerHTML = arquivos.map(file => `
                     <div class="file-item">
                         <span class="name">📄 ${file.name}</span>
                         <div>
                             <button onclick="carregarArquivo('${file.name}')">Abrir</button>
-                            <button class="danger" onclick="deletarArquivo('${file.name}')">🗑️</button>
+                            <button onclick="deletarArquivo('${file.name}')" style="background:#5a2727;border-color:#8c3f3f;">🗑️</button>
                         </div>
                     </div>
                 `).join('');
                 
-                setStatus(`📁 ${files.length} arquivos encontrados`, 'success');
+                setStatus(`📁 ${arquivos.length} roteiros encontrados`, 'success');
             } catch (error) {
                 document.getElementById('files').innerHTML = `<p style="color: #888;">❌ Erro ao listar</p>`;
                 setStatus(`❌ Erro`, 'error');
@@ -745,8 +714,7 @@ REGras de formatação:
                 const conteudo = decodeURIComponent(escape(atob(data.content)));
                 editor.value = conteudo;
                 document.getElementById('nomeArquivo').value = nome;
-                preview.innerHTML = formatarRoteiro(conteudo);
-                charCount.textContent = conteudo.length + ' caracteres';
+                atualizarPreview();
                 setStatus(`✅ "${nome}" carregado!`, 'success');
             } catch (error) {
                 setStatus(`❌ Erro ao carregar`, 'error');
@@ -790,7 +758,7 @@ REGras de formatação:
                 setStatus('⚠️ Roteiro vazio!', 'error');
                 return;
             }
-            const blob = new Blob([conteudo], {type: 'text/plain'});
+            const blob = new Blob([conteudo], {type: 'text/plain;charset=utf-8'});
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
             link.download = document.getElementById('nomeArquivo').value || 'meu-roteiro.fountain';
@@ -799,29 +767,44 @@ REGras de formatação:
         }
 
         function exportarPDF() {
-            setStatus('📄 Gerando PDF...', 'info');
-            // Abre uma janela com o preview para imprimir como PDF
-            const conteudo = preview.innerHTML;
+            setStatus('📄 Abrindo PDF...', 'info');
+            
+            const conteudoHTML = preview.innerHTML;
+            const titulo = document.getElementById('nomeArquivo').value || 'Roteiro';
+            
             const win = window.open('', '_blank');
             win.document.write(`
                 <html>
                 <head>
-                    <title>Roteiro</title>
+                    <title>${titulo}</title>
                     <style>
-                        body { font-family: 'Courier New', monospace; padding: 40px; max-width: 800px; margin: 0 auto; }
-                        .scene-header { text-transform: uppercase; font-weight: bold; margin: 15px 0 10px 0; }
-                        .action { margin: 8px 0; }
-                        .character { text-transform: uppercase; font-weight: bold; text-align: center; margin: 15px 0 5px 0; }
-                        .dialogue { margin: 0 auto 10px auto; padding-left: 30%; max-width: 70%; }
-                        .transition { text-transform: uppercase; text-align: right; margin: 15px 0 10px 0; }
-                        .parenthetical { text-align: center; color: #666; font-style: italic; margin: 2px 0 2px 30%; }
-                        @media print { body { padding: 20px; } }
+                        body { 
+                            font-family: 'Courier New', Courier, monospace; 
+                            padding: 40px 50px; 
+                            max-width: 800px; 
+                            margin: 0 auto; 
+                            background: white;
+                            color: black;
+                        }
+                        .scene { text-transform: uppercase; font-weight: bold; margin: 20px 0 12px 0; text-align: left; font-size: 13px; }
+                        .action { margin: 6px 0 10px 0; text-align: left; font-size: 12.5px; line-height: 1.6; }
+                        .character { text-transform: uppercase; font-weight: bold; text-align: center; margin: 18px 0 4px 0; font-size: 13px; }
+                        .dialogue { margin: 0 auto 8px auto; padding-left: 30%; max-width: 70%; text-align: left; font-size: 12.5px; line-height: 1.6; }
+                        .transition { text-transform: uppercase; text-align: right; margin: 15px 0 10px 0; font-size: 12.5px; font-weight: bold; }
+                        .parenthetical { text-align: center; color: #666; font-style: italic; margin: 2px 0 2px 30%; font-size: 12px; }
+                        .empty-line { height: 12px; }
+                        @media print {
+                            body { padding: 30px 40px; }
+                            .dialogue { padding-left: 28%; max-width: 72%; }
+                        }
                     </style>
                 </head>
                 <body>
-                    ${conteudo}
+                    ${conteudoHTML}
                     <script>
-                        window.onload = function() { window.print(); }
+                        window.onload = function() { 
+                            setTimeout(function() { window.print(); }, 500);
+                        }
                     <\/script>
                 </body>
                 </html>
@@ -833,8 +816,7 @@ REGras de formatação:
         function limpar() {
             if (editor.value && !confirm('Tem certeza? O conteúdo atual será perdido.')) return;
             editor.value = '';
-            preview.innerHTML = '👈 Escreva no editor para ver a prévia formatada';
-            charCount.textContent = '0 caracteres';
+            atualizarPreview();
             setStatus('📝 Novo roteiro criado', 'info');
         }
 
@@ -844,7 +826,7 @@ REGras de formatação:
         // Detecta automaticamente da URL
         const urlParts = window.location.href.split('/');
         const detectedOwner = urlParts[2]?.split('.')[0];
-        const detectedRepo = urlParts[3] || '';
+        const detectedRepo = urlParts[3] || 'SKRYPT';
         
         if (detectedOwner && detectedOwner !== 'github.io') {
             document.getElementById('configOwner').value = detectedOwner;
@@ -855,11 +837,7 @@ REGras de formatação:
         }
 
         // Preview inicial
-        setTimeout(() => {
-            if (editor.value) {
-                preview.innerHTML = formatarRoteiro(editor.value);
-            }
-        }, 100);
+        setTimeout(atualizarPreview, 100);
 
         console.log('🎬 Editor de Roteiros Profissional carregado!');
     </script>
