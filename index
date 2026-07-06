@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✍️ Editor de Roteiros - GitHub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0d1117;
+            color: #c9d1d9;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid #30363d;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: #f0f6fc;
+            font-size: 24px;
+        }
+
+        .badge {
+            background: #238636;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #238636;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2ea043;
+        }
+
+        .btn-secondary {
+            background: #21262d;
+            color: #c9d1d9;
+            border: 1px solid #30363d;
+        }
+
+        .btn-secondary:hover {
+            background: #30363d;
+        }
+
+        .btn-danger {
+            background: #da3633;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #f85149;
+        }
+
+        .editor-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .editor-area {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .editor-panel {
+            background: #161b22;
+            border-radius: 6px;
+            border: 1px solid #30363d;
+            overflow: hidden;
+        }
+
+        .panel-header {
+            padding: 12px 16px;
+            background: #0d1117;
+            border-bottom: 1px solid #30363d;
+            font-size: 12px;
+            color: #8b949e;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        textarea {
+            width: 100%;
+            height: 600px;
+            padding: 16px;
+            background: transparent;
+            color: #c9d1d9;
+            border: none;
+            outline: none;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            resize: vertical;
+        }
+
+        .preview {
+            padding: 16px;
+            height: 600px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.8;
+            white-space: pre-wrap;
+        }
+
+        .file-list {
+            background: #161b22;
+            border-radius: 6px;
+            border: 1px solid #30363d;
+            padding: 15px;
+            margin-top: 20px;
+        }
+
+        .file-item {
+            padding: 8px 12px;
+            margin: 4px 0;
+            background: #0d1117;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.2s;
+        }
+
+        .file-item:hover {
+            background: #1c2333;
+        }
+
+        .file-name {
+            color: #58a6ff;
+        }
+
+        .file-actions button {
+            margin-left: 8px;
+            padding: 2px 10px;
+            font-size: 12px;
+        }
+
+        .status {
+            padding: 10px 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .status-success {
+            background: #0d2818;
+            border: 1px solid #238636;
+            color: #3fb950;
+        }
+
+        .status-error {
+            background: #2d0f0f;
+            border: 1px solid #da3633;
+            color: #f85149;
+        }
+
+        .status-info {
+            background: #0d1f2d;
+            border: 1px solid #1f6feb;
+            color: #58a6ff;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        input[type="text"] {
+            background: #0d1117;
+            border: 1px solid #30363d;
+            color: #c9d1d9;
+            padding: 6px 12px;
+            border-radius: 6px;
+            width: 200px;
+        }
+
+        input[type="text"]:focus {
+            border-color: #58a6ff;
+            outline: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div>
+                <h1>✍️ Editor de Roteiros</h1>
+                <span class="badge">GitHub Sync</span>
+            </div>
+            <div>
+                <span id="userStatus" style="color: #8b949e; font-size: 14px;">
+                    🔗 Conectado ao GitHub
+                </span>
+            </div>
+        </header>
+
+        <!-- Status -->
+        <div id="status" class="status status-info">
+            📁 Pronto para editar
+        </div>
+
+        <!-- Toolbar -->
+        <div class="toolbar">
+            <button class="btn btn-primary" onclick="salvarRoteiro()">💾 Salvar no GitHub</button>
+            <button class="btn btn-secondary" onclick="carregarRoteiro()">📂 Carregar</button>
+            <button class="btn btn-secondary" onclick="exportarPDF()">📄 Exportar PDF</button>
+            <button class="btn btn-secondary" onclick="baixarLocal()">⬇️ Baixar Local</button>
+            
+            <input type="text" id="nomeArquivo" placeholder="nome-do-roteiro.txt" value="meu-roteiro.txt" style="margin-left: 10px;">
+            
+            <button class="btn btn-danger" onclick="novoRoteiro()">🗑️ Novo</button>
+        </div>
+
+        <!-- Editor Area -->
+        <div class="editor-area">
+            <div class="editor-panel">
+                <div class="panel-header">
+                    <span>📝 Editor</span>
+                    <span id="charCount">0 caracteres</span>
+                </div>
+                <textarea id="editor" placeholder="Escreva seu roteiro aqui... 
+
+EXEMPLO:
+INT. CAFÉ - DIA
+
+JOÃO (30) está sentado, mexendo no celular.
+
+MARIA entra apressada.
+
+MARIA
+Desculpa o atraso! O trânsito estava horrível.
+
+JOÃO
+Sem problemas. Já pedi seu café.
+"></textarea>
+            </div>
+            <div class="editor-panel">
+                <div class="panel-header">
+                    <span>👁️ Preview</span>
+                    <span style="color: #8b949e;">Visualização</span>
+                </div>
+                <div class="preview" id="preview">👈 Escreva no editor para ver a prévia aqui</div>
+            </div>
+        </div>
+
+        <!-- Lista de Arquivos -->
+        <div class="file-list">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h3 style="color: #f0f6fc; font-size: 16px;">📁 Seus Roteiros</h3>
+                <button class="btn btn-secondary" onclick="listarArquivos()">🔄 Atualizar</button>
+            </div>
+            <div id="fileList">
+                <p style="color: #8b949e; font-size: 14px;">Clique em "Atualizar" para ver seus roteiros</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuração
+        const REPO_OWNER = 'SEU_USUARIO_AQUI'; // ← MUDE AQUI
+        const REPO_NAME = 'SEU_REPO_AQUI';      // ← MUDE AQUI
+        const PASTA_ROTEIROS = 'roteiros/';
+
+        const editor = document.getElementById('editor');
+        const preview = document.getElementById('preview');
+        const statusDiv = document.getElementById('status');
+        const charCount = document.getElementById('charCount');
+        const nomeArquivo = document.getElementById('nomeArquivo');
+
+        // Atualiza preview em tempo real
+        editor.addEventListener('input', function() {
+            preview.textContent = this.value || '👈 Escreva no editor para ver a prévia aqui';
+            charCount.textContent = this.value.length + ' caracteres';
+        });
+
+        // Função para mostrar status
+        function setStatus(mensagem, tipo = 'info') {
+            statusDiv.textContent = mensagem;
+            statusDiv.className = 'status status-' + tipo;
+        }
+
+        // FUNÇÃO PRINCIPAL: Salvar no GitHub
+        async function salvarRoteiro() {
+            const nome = nomeArquivo.value.trim() || 'meu-roteiro.txt';
+            const conteudo = editor.value;
+            
+            if (!conteudo) {
+                setStatus('⚠️ O roteiro está vazio!', 'error');
+                return;
+            }
+
+            setStatus('⏳ Salvando...', 'info');
+
+            try {
+                // Primeiro, verifica se o arquivo já existe para pegar o SHA
+                let sha = null;
+                try {
+                    const response = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${PASTA_ROTEIROS}${nome}`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        sha = data.sha;
+                    }
+                } catch (e) {
+                    // Arquivo não existe, tudo bem
+                }
+
+                // Prepara o conteúdo em base64
+                const contentBase64 = btoa(unescape(encodeURIComponent(conteudo)));
+
+                const response = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${PASTA_ROTEIROS}${nome}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${getToken()}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: `Atualizando roteiro: ${nome}`,
+                        content: contentBase64,
+                        sha: sha
+                    })
+                });
+
+                if (response.ok) {
+                    setStatus(`✅ Roteiro "${nome}" salvo com sucesso!`, 'success');
+                    listarArquivos();
+                } else {
+                    const error = await response.json();
+                    setStatus(`❌ Erro: ${error.message || 'Falha ao salvar'}`, 'error');
+                }
+            } catch (error) {
+                setStatus(`❌ Erro: ${error.message}`, 'error');
+            }
+        }
+
+        // Carregar arquivo do GitHub
+        async function carregarRoteiro() {
+            const nome = prompt('Qual arquivo deseja carregar?', 'meu-roteiro.txt');
+            if (!nome) return;
+
+            setStatus(`⏳ Carregando "${nome}"...`, 'info');
+
+            try {
+                const response = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${PASTA_ROTEIROS}${nome}`);
+                
+                if (!response.ok) {
+                    throw new Error('Arquivo não encontrado');
+                }
+
+                const data = await response.json();
+                const conteudo = decodeURIComponent(escape(atob(data.content)));
+                
+                editor.value = conteudo;
+                preview.textContent = conteudo;
+                nomeArquivo.value = nome;
+                charCount.textContent = conteudo.length + ' caracteres';
+                
+                setStatus(`✅ "${nome}" carregado com sucesso!`, 'success');
+            } catch (error) {
+                setStatus(`❌ Erro: ${error.message}`, 'error');
+            }
+        }
+
+        // Listar todos os arquivos
+        async function listarArquivos() {
+            setStatus('⏳ Listando arquivos...', 'info');
+            
+            try {
+                const response = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${PASTA_ROTEIROS}`);
+                
+                if (!response.ok) {
+                    throw new Error('Pasta não encontrada ou vazia');
+                }
+
+                const files = await response.json();
+                const fileListDiv = document.getElementById('fileList');
+                
+                if (files.length === 0) {
+                    fileListDiv.innerHTML = '<p style="color: #8b949e;">Nenhum roteiro encontrado</p>';
+                    return;
+                }
+
+                fileListDiv.innerHTML = files.map(file => `
+                    <div class="file-item">
+                        <span class="file-name">📄 ${file.name}</span>
+                        <div class="file-actions">
+                            <button class="btn btn-secondary" onclick="carregarArquivo('${file.name}')">Abrir</button>
+                            <button class="btn btn-danger" onclick="deletarArquivo('${file.name}')">🗑️</button>
+                        </div>
+                    </div>
+                `).join('');
+                
+                setStatus(`📁 ${files.length} arquivos encontrados`, 'success');
+            } catch (error) {
+                document.getElementById('fileList').innerHTML = 
+                    '<p style="color: #8b949e;">Nenhum roteiro encontrado. Crie o primeiro!</p>';
+                setStatus('📁 Pasta vazia - crie seu primeiro roteiro!', 'info');
+            }
+        }
+
+        // Carregar arquivo específico (usado pela lista)
+        async function carregarArquivo(nome) {
+            setStatus(`⏳ Carregando "${nome}"...`, 'info');
+
+            try {
+                const response = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${PASTA_ROTEIROS}${nome}`);
+                const data = await response.json();
+                const conteudo = decodeURIComponent(escape(atob(data.content)));
+                
+                editor.value = conteudo;
+                preview.textContent = conteudo;
+                nomeArquivo.value = nome;
+                charCount.textContent = conteudo.length + ' caracteres';
+                
+                setStatus(`✅ "${nome}" carregado!`, 'success');
+            } catch (error) {
+                setStatus(`❌ Erro: ${error.message}`, 'error');
+            }
+        }
+
+        // Deletar arquivo
+        async function deletarArquivo(nome) {
+            if (!confirm(`Tem certeza que quer deletar "${nome}"?`)) return;
+
+            setStatus(`⏳ Deletando...`, 'info');
+
+            try {
+                // Primeiro pega o SHA do arquivo
+                const response = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${PASTA_ROTEIROS}${nome}`);
+                const data = await response.json();
+
+                const deleteResponse = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${PASTA_ROTEIROS}${nome}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `token ${getToken()}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: `Deletando roteiro: ${nome}`,
+                        sha: data.sha
+                    })
+                });
+
+                if (deleteResponse.ok) {
+                    setStatus(`✅ "${nome}" deletado!`, 'success');
+                    listarArquivos();
+                } else {
+                    throw new Error('Falha ao deletar');
+                }
+            } catch (error) {
+                setStatus(`❌ Erro: ${error.message}`, 'error');
+            }
+        }
+
+        // Funções auxiliares
+        function getToken() {
+            const token = prompt('🔑 Digite seu GitHub Personal Access Token:', '');
+            if (!token) {
+                setStatus('❌ Token necessário para salvar no GitHub', 'error');
+                throw new Error('Token não fornecido');
+            }
+            return token;
+        }
+
+        function baixarLocal() {
+            const conteudo = editor.value;
+            if (!conteudo) {
+                setStatus('⚠️ Roteiro vazio!', 'error');
+                return;
+            }
+            
+            const blob = new Blob([conteudo], {type: 'text/plain'});
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = nomeArquivo.value || 'meu-roteiro.txt';
+            link.click();
+            
+            setStatus('⬇️ Arquivo baixado localmente', 'success');
+        }
+
+        function novoRoteiro() {
+            if (editor.value && !confirm('Tem certeza? O conteúdo atual será perdido.')) {
+                return;
+            }
+            editor.value = '';
+            preview.textContent = '👈 Escreva no editor para ver a prévia aqui';
+            charCount.textContent = '0 caracteres';
+            setStatus('📝 Novo roteiro criado', 'info');
+        }
+
+        function exportarPDF() {
+            setStatus('📄 Função de PDF em desenvolvimento...', 'info');
+            alert('Em breve: exportação para PDF!');
+        }
+
+        // Inicialização
+        listarArquivos();
+        
+        console.log('✍️ Editor de Roteiros carregado!');
+        console.log(`📁 Repositório: ${REPO_OWNER}/${REPO_NAME}`);
+    </script>
+</body>
+</html>
