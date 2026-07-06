@@ -2,434 +2,166 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🎬 Editor de Roteiros</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
-            font-family: 'Courier New', monospace;
             background: #1a1a1a;
             color: #e0e0e0;
+            font-family: 'Courier New', monospace;
             padding: 20px;
-        }
-
-        .container {
             max-width: 1200px;
             margin: 0 auto;
         }
-
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 0;
-            border-bottom: 2px solid #333;
-            margin-bottom: 20px;
-        }
-
-        h1 {
-            color: #ffd700;
-            font-size: 24px;
-        }
-
+        h1 { color: #ffd700; }
         .toolbar {
             display: flex;
             gap: 8px;
             flex-wrap: wrap;
-            margin-bottom: 15px;
+            margin: 10px 0;
             padding: 10px;
             background: #2a2a2a;
             border-radius: 8px;
-            border: 1px solid #444;
         }
-
         .toolbar button {
             padding: 8px 16px;
             border: 1px solid #555;
             border-radius: 4px;
             cursor: pointer;
             font-family: 'Courier New', monospace;
-            font-size: 13px;
             font-weight: bold;
-            transition: all 0.2s;
             background: #333;
             color: #e0e0e0;
         }
-
         .toolbar button:hover {
-            background: #444;
             border-color: #ffd700;
             color: #ffd700;
         }
-
-        .btn-cena { background: #1a3a5c; border-color: #2a5a8c; }
-        .btn-personagem { background: #5c3a1a; border-color: #8c5a2a; }
-        .btn-dialogo { background: #1a5c3a; border-color: #2a8c5a; }
-        .btn-acao { background: #3a3a5c; border-color: #5a5a8c; }
-        .btn-transicao { background: #5c1a3a; border-color: #8c2a5a; }
-        .btn-pdf { background: #5a2d27; border-color: #8c4a3f; }
-
         .editor-area {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 20px;
-            height: calc(100vh - 280px);
-            min-height: 400px;
+            height: 500px;
         }
-
-        @media (max-width: 800px) {
-            .editor-area {
-                grid-template-columns: 1fr;
-                height: auto;
-            }
-            .editor-panel, .preview-panel {
-                height: 400px !important;
-            }
-        }
-
-        .editor-panel {
-            background: #0d0d0d;
-            border: 1px solid #333;
-            border-radius: 8px;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .panel-header {
-            padding: 10px 15px;
-            background: #252525;
-            border-bottom: 1px solid #333;
-            font-size: 12px;
-            color: #888;
-            display: flex;
-            justify-content: space-between;
-        }
-
         #editor {
-            flex: 1;
-            padding: 20px;
+            width: 100%;
+            height: 100%;
+            padding: 15px;
             background: #0d0d0d;
             color: #e0e0e0;
-            border: none;
-            outline: none;
-            font-family: 'Courier New', monospace;
-            font-size: 14px;
-            line-height: 1.8;
-            resize: none;
-            min-height: 400px;
-        }
-
-        .preview-panel {
-            background: #ffffff;
             border: 1px solid #333;
             border-radius: 8px;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            resize: none;
         }
-
-        .preview-panel .panel-header {
-            background: #252525;
-            color: #888;
-        }
-
         #preview {
-            flex: 1;
-            padding: 30px 40px;
+            height: 100%;
+            padding: 20px;
             background: #ffffff;
             color: #1a1a1a;
-            font-family: 'Courier New', monospace;
-            font-size: 12.5px;
-            line-height: 1.6;
+            border: 1px solid #333;
+            border-radius: 8px;
             overflow-y: auto;
-            min-height: 400px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.8;
             white-space: pre-wrap;
         }
-
-        /* ESTILOS DO ROTEIRO */
-        .scene {
-            text-transform: uppercase;
-            font-weight: bold;
-            margin: 20px 0 12px 0;
-            text-align: left;
-            font-size: 13px;
-        }
-
-        .action {
-            margin: 6px 0 10px 0;
-            text-align: left;
-            font-size: 12.5px;
-            line-height: 1.6;
-        }
-
-        .character {
-            text-transform: uppercase;
-            font-weight: bold;
-            text-align: center;
-            margin: 18px 0 4px 0;
-            font-size: 13px;
-        }
-
-        .dialogue {
-            margin: 0 auto 8px auto;
-            padding-left: 30%;
-            max-width: 70%;
-            text-align: left;
-            font-size: 12.5px;
-            line-height: 1.6;
-        }
-
-        .transition {
-            text-transform: uppercase;
-            text-align: right;
-            margin: 15px 0 10px 0;
-            font-size: 12.5px;
-            font-weight: bold;
-        }
-
-        .parenthetical {
-            text-align: center;
-            color: #666;
-            font-style: italic;
-            margin: 2px 0 2px 30%;
-            font-size: 12px;
-        }
-
-        .empty-line {
-            height: 12px;
-        }
-
         .status {
             padding: 10px 15px;
             border-radius: 6px;
             margin: 10px 0;
-            font-family: 'Courier New', monospace;
-            font-size: 13px;
-        }
-
-        .status.success {
-            background: #0d2818;
-            border: 1px solid #238636;
-            color: #3fb950;
-        }
-
-        .status.error {
-            background: #2d0f0f;
-            border: 1px solid #da3633;
-            color: #f85149;
-        }
-
-        .status.info {
             background: #0d1f2d;
             border: 1px solid #1f6feb;
             color: #58a6ff;
         }
-
-        .file-list {
-            background: #1a1a1a;
-            border: 1px solid #333;
-            border-radius: 8px;
-            padding: 15px;
-            margin-top: 15px;
-            max-height: 150px;
-            overflow-y: auto;
-        }
-
-        .file-list h3 {
-            color: #888;
-            font-size: 14px;
-            font-weight: normal;
-            margin-bottom: 10px;
-        }
-
-        .file-item {
-            padding: 4px 10px;
-            margin: 3px 0;
-            background: #252525;
-            border-radius: 4px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border: 1px solid #333;
-        }
-
-        .file-item .name {
-            color: #e0e0e0;
-            font-size: 12px;
-        }
-
-        .file-item button {
-            background: #333;
-            color: #e0e0e0;
-            border: 1px solid #555;
-            padding: 2px 10px;
-            border-radius: 3px;
-            cursor: pointer;
-            font-size: 11px;
-        }
-
-        .file-item button:hover {
-            background: #444;
-        }
-
-        .dica {
-            background: #1a1a2a;
-            border: 1px solid #2a2a4a;
-            border-radius: 6px;
-            padding: 10px 15px;
-            margin: 10px 0;
-            font-size: 12px;
-            color: #888;
-        }
-
-        .dica strong {
-            color: #ffd700;
+        .scene { text-transform: uppercase; font-weight: bold; margin: 15px 0 10px 0; }
+        .action { margin: 5px 0; }
+        .character { text-transform: uppercase; font-weight: bold; text-align: center; margin: 15px 0 5px 0; }
+        .dialogue { margin: 0 auto 5px auto; padding-left: 30%; max-width: 70%; }
+        .transition { text-transform: uppercase; text-align: right; margin: 15px 0 10px 0; font-weight: bold; }
+        .parenthetical { text-align: center; color: #666; font-style: italic; margin: 2px 0 2px 30%; }
+        .empty-line { height: 10px; }
+        @media (max-width: 700px) {
+            .editor-area { grid-template-columns: 1fr; height: auto; }
+            #editor { height: 300px; }
+            #preview { height: 300px; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>🎬 Editor de Roteiros</h1>
-            <span style="color: #666; font-size: 12px;">Clique nos botões para formatar</span>
-        </header>
 
-        <div class="status info" id="status">📁 Pronto para editar</div>
+    <h1>🎬 Editor de Roteiros</h1>
 
-        <div class="dica">
-            💡 <strong>Dica:</strong> Clique nos botões abaixo para inserir cada elemento. 
-            O personagem é salvo automaticamente para sugestão!
-        </div>
+    <div class="status" id="status">📁 Pronto para editar</div>
 
-        <!-- TOOLBAR -->
-        <div class="toolbar">
-            <button class="btn-cena" onclick="inserirCena()">🎬 Cena</button>
-            <button class="btn-personagem" onclick="inserirPersonagem()">👤 Personagem</button>
-            <button class="btn-dialogo" onclick="inserirDialogo()">💬 Diálogo</button>
-            <button class="btn-acao" onclick="inserirAcao()">📝 Ação</button>
-            <button class="btn-transicao" onclick="inserirTransicao()">🔄 Transição</button>
-            <button class="btn-pdf" onclick="exportarPDF()">📄 PDF</button>
-            <button onclick="baixar()">⬇️ Baixar</button>
-            <button onclick="limpar()" style="background:#5a2727;border-color:#8c3f3f;">🗑️ Novo</button>
-        </div>
+    <div class="toolbar">
+        <button onclick="inserirCena()">🎬 Cena</button>
+        <button onclick="inserirPersonagem()">👤 Personagem</button>
+        <button onclick="inserirDialogo()">💬 Diálogo</button>
+        <button onclick="inserirAcao()">📝 Ação</button>
+        <button onclick="inserirTransicao()">🔄 Transição</button>
+        <button onclick="exportarPDF()">📄 PDF</button>
+        <button onclick="baixar()">⬇️ Baixar</button>
+        <button onclick="limpar()" style="background:#5a2727;border-color:#8c3f3f;">🗑️ Novo</button>
+    </div>
 
-        <!-- EDITOR + PREVIEW -->
-        <div class="editor-area">
-            <div class="editor-panel">
-                <div class="panel-header">
-                    <span>✍️ Editor</span>
-                    <span id="charCount">0 caracteres</span>
-                </div>
-                <textarea id="editor" spellcheck="true"></textarea>
-            </div>
-            <div class="preview-panel">
-                <div class="panel-header">
-                    <span>🎬 Preview</span>
-                    <span>Visualização</span>
-                </div>
-                <div id="preview">👈 Use os botões para criar seu roteiro</div>
-            </div>
-        </div>
-
-        <!-- FILE LIST -->
-        <div class="file-list">
-            <h3>📁 Seus Roteiros</h3>
-            <div id="files">Use "Baixar" para salvar seu roteiro como arquivo de texto</div>
-        </div>
+    <div class="editor-area">
+        <textarea id="editor" spellcheck="true"></textarea>
+        <div id="preview">👈 Use os botões para criar seu roteiro</div>
     </div>
 
     <script>
-        // ============================================================
-        // BANCO DE PERSONAGENS
-        // ============================================================
-        let personagens = [];
-
         // ============================================================
         // ELEMENTOS
         // ============================================================
         const editor = document.getElementById('editor');
         const preview = document.getElementById('preview');
         const statusDiv = document.getElementById('status');
-        const charCount = document.getElementById('charCount');
 
         // ============================================================
-        // FUNÇÕES DE INSERÇÃO
+        // INSERIR TEXTOS
         // ============================================================
-        function getCursorPosition() {
-            return editor.selectionStart;
-        }
-
-        function setCursorPosition(pos) {
-            editor.focus();
-            editor.setSelectionRange(pos, pos);
-        }
-
-        function inserirTexto(texto, quebraLinha = true) {
-            const pos = getCursorPosition();
+        function inserirTexto(texto) {
+            const pos = editor.selectionStart;
             const antes = editor.value.substring(0, pos);
             const depois = editor.value.substring(pos);
-            const novoTexto = quebraLinha ? texto + '\n' : texto;
-            editor.value = antes + novoTexto + depois;
-            setCursorPosition(pos + novoTexto.length);
-            atualizarPreview();
+            editor.value = antes + texto + '\n' + depois;
+            const novaPos = pos + texto.length + 1;
+            editor.setSelectionRange(novaPos, novaPos);
             editor.focus();
+            atualizarPreview();
         }
 
         function inserirCena() {
             const texto = prompt('📍 Cabeçalho da cena (ex: INT. DELEGACIA - DIA):', '');
-            if (texto) {
-                inserirTexto(texto.toUpperCase() + '\n');
-                setStatus('🎬 Cena inserida!', 'success');
-            }
+            if (texto) { inserirTexto(texto.toUpperCase()); status('🎬 Cena inserida!', 'success'); }
         }
 
         function inserirPersonagem() {
-            const nome = prompt('👤 Nome do personagem:', '');
-            if (nome) {
-                const nomeUpper = nome.toUpperCase().trim();
-                if (!personagens.includes(nomeUpper)) {
-                    personagens.push(nomeUpper);
-                    personagens.sort();
-                }
-                inserirTexto(nomeUpper + '\n');
-                setStatus(`👤 "${nomeUpper}" inserido!`, 'success');
-            }
+            const texto = prompt('👤 Nome do personagem:', '');
+            if (texto) { inserirTexto(texto.toUpperCase()); status('👤 Personagem inserido!', 'success'); }
         }
 
         function inserirDialogo() {
             const texto = prompt('💬 Fala do personagem:', '');
-            if (texto) {
-                inserirTexto(texto + '\n');
-                setStatus('💬 Diálogo inserido!', 'success');
-            }
+            if (texto) { inserirTexto(texto); status('💬 Diálogo inserido!', 'success'); }
         }
 
         function inserirAcao() {
             const texto = prompt('📝 Descrição da ação:', '');
-            if (texto) {
-                inserirTexto(texto + '\n');
-                setStatus('📝 Ação inserida!', 'success');
-            }
+            if (texto) { inserirTexto(texto); status('📝 Ação inserida!', 'success'); }
         }
 
         function inserirTransicao() {
-            const texto = prompt('🔄 Transição (ex: TRANSIGÃO):', 'TRANSIGÃO');
-            if (texto) {
-                inserirTexto(texto.toUpperCase() + '\n');
-                setStatus('🔄 Transição inserida!', 'success');
-            }
+            const texto = prompt('🔄 Transição:', 'TRANSIGÃO');
+            if (texto) { inserirTexto(texto.toUpperCase()); status('🔄 Transição inserida!', 'success'); }
         }
 
         // ============================================================
         // FORMATAÇÃO
         // ============================================================
-        function formatarRoteiro(texto) {
+        function formatar(texto) {
             if (!texto || !texto.trim()) return '👈 Use os botões para criar seu roteiro';
 
             const linhas = texto.split('\n');
@@ -467,7 +199,6 @@
                     !/^[A-Z][A-Z\s]+:$/.test(linhaTrim) &&
                     !/^TRANS/I.test(linhaTrim) &&
                     !linhaTrim.includes('(')) {
-                    
                     resultado.push(`<div class="character">${linhaTrim}</div>`);
                     emDialogo = true;
                     continue;
@@ -495,76 +226,52 @@
         }
 
         function atualizarPreview() {
-            const texto = editor.value;
-            charCount.textContent = texto.length + ' caracteres';
-            preview.innerHTML = formatarRoteiro(texto);
-            
-            // Atualiza lista de personagens automaticamente
-            const lines = texto.split('\n');
-            for (let line of lines) {
-                const trimmed = line.trim();
-                if (trimmed === trimmed.toUpperCase() && 
-                    trimmed.length > 1 && 
-                    !/^(CENA|INT\.|EXT\.)/i.test(trimmed) &&
-                    !/^[A-Z][A-Z\s]+:$/.test(trimmed) &&
-                    !/^TRANS/I.test(trimmed) &&
-                    !trimmed.includes('(') &&
-                    !trimmed.includes(')')) {
-                    if (!personagens.includes(trimmed)) {
-                        personagens.push(trimmed);
-                        personagens.sort();
-                    }
-                }
-            }
+            preview.innerHTML = formatar(editor.value);
         }
 
         editor.addEventListener('input', atualizarPreview);
 
         // ============================================================
-        // FUNÇÕES AUXILIARES
+        // STATUS
         // ============================================================
-        function setStatus(msg, tipo = 'info') {
+        function status(msg, tipo = 'info') {
             statusDiv.textContent = msg;
-            statusDiv.className = 'status ' + tipo;
+            statusDiv.style.borderColor = tipo === 'success' ? '#238636' : '#1f6feb';
+            statusDiv.style.color = tipo === 'success' ? '#3fb950' : '#58a6ff';
+            setTimeout(() => {
+                statusDiv.textContent = '📁 Pronto para editar';
+                statusDiv.style.borderColor = '#1f6feb';
+                statusDiv.style.color = '#58a6ff';
+            }, 3000);
         }
 
+        // ============================================================
+        // EXPORTAR
+        // ============================================================
         function baixar() {
-            const conteudo = editor.value;
-            if (!conteudo) {
-                setStatus('⚠️ Roteiro vazio!', 'error');
-                return;
-            }
-            const blob = new Blob([conteudo], {type: 'text/plain;charset=utf-8'});
+            if (!editor.value) { status('⚠️ Roteiro vazio!', 'error'); return; }
+            const blob = new Blob([editor.value], { type: 'text/plain;charset=utf-8' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
             link.download = 'meu-roteiro.fountain';
             link.click();
-            setStatus('⬇️ Arquivo baixado!', 'success');
+            status('⬇️ Arquivo baixado!', 'success');
         }
 
         function exportarPDF() {
-            const conteudoHTML = preview.innerHTML;
-            if (!conteudoHTML || conteudoHTML.includes('Use os botões')) {
-                setStatus('⚠️ Escreva algo no roteiro primeiro!', 'error');
+            const html = preview.innerHTML;
+            if (!html || html.includes('Use os botões')) {
+                status('⚠️ Escreva algo no roteiro!', 'error');
                 return;
             }
-
-            setStatus('📄 Abrindo PDF...', 'info');
-            
+            status('📄 Abrindo PDF...', 'info');
             const win = window.open('', '_blank');
             win.document.write(`
                 <html>
                 <head>
                     <title>Meu Roteiro</title>
                     <style>
-                        body { 
-                            font-family: 'Courier New', monospace; 
-                            padding: 40px 50px; 
-                            max-width: 800px; 
-                            margin: 0 auto; 
-                            background: white;
-                            color: black;
-                        }
+                        body { font-family: 'Courier New', monospace; padding: 40px 50px; max-width: 800px; margin: 0 auto; background: white; color: black; }
                         .scene { text-transform: uppercase; font-weight: bold; margin: 20px 0 12px 0; text-align: left; font-size: 13px; }
                         .action { margin: 6px 0 10px 0; text-align: left; font-size: 12.5px; line-height: 1.6; }
                         .character { text-transform: uppercase; font-weight: bold; text-align: center; margin: 18px 0 4px 0; font-size: 13px; }
@@ -572,37 +279,29 @@
                         .transition { text-transform: uppercase; text-align: right; margin: 15px 0 10px 0; font-size: 12.5px; font-weight: bold; }
                         .parenthetical { text-align: center; color: #666; font-style: italic; margin: 2px 0 2px 30%; font-size: 12px; }
                         .empty-line { height: 12px; }
-                        @media print {
-                            body { padding: 30px 40px; }
-                            .dialogue { padding-left: 28%; max-width: 72%; }
-                        }
+                        @media print { body { padding: 30px 40px; } .dialogue { padding-left: 28%; max-width: 72%; } }
                     </style>
                 </head>
                 <body>
-                    ${conteudoHTML}
-                    <script>
-                        window.onload = function() { 
-                            setTimeout(function() { window.print(); }, 500);
-                        }
-                    <\/script>
+                    ${html}
+                    <script>window.onload = function() { setTimeout(window.print, 500); }<\/script>
                 </body>
                 </html>
             `);
             win.document.close();
-            setStatus('📄 PDF gerado! Use "Salvar como PDF" no navegador.', 'success');
+            status('📄 PDF gerado!', 'success');
         }
 
         function limpar() {
-            if (editor.value && !confirm('Tem certeza? O conteúdo atual será perdido.')) return;
+            if (editor.value && !confirm('Tem certeza?')) return;
             editor.value = '';
             atualizarPreview();
-            setStatus('📝 Novo roteiro criado', 'info');
+            status('📝 Novo roteiro', 'success');
         }
 
         // ============================================================
-        // INICIALIZAÇÃO
+        // INICIALIZAR
         // ============================================================
-        // Texto de exemplo
         editor.value = `CENA 01 DELEGACIA - INT - DIA
 
 Em uma comemoração na delegacia o delegado parabeniza SÔNIA:
@@ -620,10 +319,8 @@ DELEGADO BRANDÃO
 TRANSIGÃO`;
 
         atualizarPreview();
-        setStatus('🎬 Editor carregado! Use os botões para criar seu roteiro.', 'success');
-
-        console.log('🎬 Editor de Roteiros carregado!');
-        console.log('👤 Personagens:', personagens);
+        console.log('🎬 Editor carregado!');
     </script>
+
 </body>
 </html>
