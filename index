@@ -299,8 +299,8 @@ Sem problemas. Já pedi seu café.
 
     <script>
         // Configuração
-        const REPO_OWNER = 'SEU_USUARIO_AQUI'; // ← MUDE AQUI
-        const REPO_NAME = 'SEU_REPO_AQUI';      // ← MUDE AQUI
+        const REPO_OWNER = 'CAPUCCI'; // ← MUDE AQUI
+        const REPO_NAME = 'SKRYPT';      // ← MUDE AQUI
         const PASTA_ROTEIROS = 'roteiros/';
 
         const editor = document.getElementById('editor');
